@@ -10,7 +10,7 @@ on:
 jobs:
 
   infra-setup:
-  
+
     runs-on: ["ubuntu-latest"]
 
     steps:
@@ -44,5 +44,5 @@ jobs:
       run: terraform plan -auto-approve -var-file="dev.params.tfvars"
 
     - name: "Execute Terraform apply"
-      if: github.event_name = 'push' && github.ref_name = 'main'
+      if: github.event_name == 'push' && github.ref_name == 'main'
       run: "echo Terraform apply"
