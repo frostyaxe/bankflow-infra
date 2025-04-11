@@ -1,6 +1,6 @@
 name: "Worflow for provisioning infra using terraform for bankflow application"
 on:
-  pull-request:
+  pull_request:
     branches:
       - "main"
   push:
