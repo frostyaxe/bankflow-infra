@@ -9,34 +9,40 @@ on:
       - "develop"
 jobs:
 
-  # Performs code checkout to get all the required files
-  - name: "Code Checkout"
-    uses: "actions/checkout@v4"
+  infra-setup:
+  
+    runs-on: ["ubuntu-latest"]
 
-  # Configures the aws credentials for the authentication
-  - name: "Configure AWS credentials"
-    uses: aws-actions/configure-aws-credentials@v1
-    with:
-      aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-      aws-region: ${{ vars.AWS_REGION }}
+    steps:
 
-  # Sets up terraform in the runner
-  - name: "Install Terraform"
-    uses: hashicorp/setup-terraform@v3
+    # Performs code checkout to get all the required files
+    - name: "Code Checkout"
+      uses: "actions/checkout@v4"
 
-  # Initializes the Terraform working directory, downloading provider plugins and setting up the backend.
-  - name: "Execute Terraform Init"
-    run: terraform init
+    # Configures the aws credentials for the authentication
+    - name: "Configure AWS credentials"
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ vars.AWS_REGION }}
 
-  # Validates the terraform file configurations
-  - name: "Validate Terraform Configurations"
-    run: terraform validate
+    # Sets up terraform in the runner
+    - name: "Install Terraform"
+      uses: hashicorp/setup-terraform@v3
 
-  # View Terraform Plan
-  - name: "View Terraform Plan"
-    run: terraform plan -auto-approve -var-file="dev.params.tfvars"
+    # Initializes the Terraform working directory, downloading provider plugins and setting up the backend.
+    - name: "Execute Terraform Init"
+      run: terraform init
 
-  - name: "Execute Terraform apply"
-    if: github.event_name = 'push' && github.ref_name = 'main'
-    run: "echo Terraform apply"
+    # Validates the terraform file configurations
+    - name: "Validate Terraform Configurations"
+      run: terraform validate
+
+    # View Terraform Plan
+    - name: "View Terraform Plan"
+      run: terraform plan -auto-approve -var-file="dev.params.tfvars"
+
+    - name: "Execute Terraform apply"
+      if: github.event_name = 'push' && github.ref_name = 'main'
+      run: "echo Terraform apply"
